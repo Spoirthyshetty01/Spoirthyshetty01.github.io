@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spoorthy Shetty</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a deep harbour-blue hero with sounding contours and a "Now" panel, then light chart-paper sections of cards, a timeline, and a closing contact panel in the hero's blue. */
+:root {
+  --bg: #F3F6F7;
+  --surface: #FFFFFF;
+  --ink: #0E2130;
+  --muted: #4B606B;
+  --line: #D3DDE1;
+  --accent: #0A7487;
+  --accent-soft: #DCEEF1;
+  --warm: #A94F05;
+  --warm-soft: #FBE9D6;
+  --shadow: 0 10px 30px -12px rgba(14, 33, 48, 0.25);
+  --hero-bg: #0A2030;
+  --hero-bg2: #11405A;
+  --hero-ink: #F3F8F9;
+  --hero-muted: #A8C1CA;
+  --hero-accent: #5ED3E3;
+  --hero-warm: #F7AB4E;
+  --hero-line: rgba(255, 255, 255, 0.09);
+  --hero-glass: rgba(255, 255, 255, 0.07);
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #08151F;
+    --surface: #11273A;
+    --ink: #E6F0F3;
+    --muted: #9DB4BE;
+    --line: #24404F;
+    --accent: #55CBDB;
+    --accent-soft: #12394A;
+    --warm: #F5A650;
+    --warm-soft: #3A2A18;
+    --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+    --hero-bg: #061520;
+    --hero-bg2: #0E3347;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #08151F;
+  --surface: #11273A;
+  --ink: #E6F0F3;
+  --muted: #9DB4BE;
+  --line: #24404F;
+  --accent: #55CBDB;
+  --accent-soft: #12394A;
+  --warm: #F5A650;
+  --warm-soft: #3A2A18;
+  --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+  --hero-bg: #061520;
+  --hero-bg2: #0E3347;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--hero-accent); outline-offset: 3px; border-radius: 4px; }
+
+.wrap {
+  width: 100%;
+  max-width: 66rem;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  margin-top: calc(-1 * env(safe-area-inset-top, 0px));
+  padding-top: calc(env(safe-area-inset-top, 0px) + 1.25rem);
+  padding-bottom: 4.5rem;
+  color: var(--hero-ink);
+  background-color: var(--hero-bg);
+  background-image:
+    radial-gradient(60rem 36rem at 90% 0%, var(--hero-bg2), transparent 65%),
+    linear-gradient(var(--hero-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hero-line) 1px, transparent 1px);
+  background-size: auto, 36px 36px, 36px 36px;
+}
+.contours {
+  position: absolute;
+  right: -8rem;
+  top: -4rem;
+  width: 44rem;
+  max-width: none;
+  height: auto;
+  opacity: 0.55;
+  pointer-events: none;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+@keyframes drift { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(-14px, 10px) rotate(2deg); } }
+.hero .wrap { position: relative; }
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+}
+.topbar .mark { font-weight: 500; display: inline-flex; align-items: center; gap: 0.6rem; }
+.topbar .dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--hero-warm); }
+.topbar nav { display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; }
+.topbar nav a { color: var(--hero-muted); text-decoration: none; }
+.topbar nav a:hover { color: var(--hero-accent); }
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2.5rem;
+  padding-top: 4rem;
+  align-items: center;
+}
+@media (min-width: 58rem) {
+  .hero-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 3.5rem; }
+}
+.eyebrow {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--hero-accent);
+  border: 1px solid var(--hero-line);
+  background: var(--hero-glass);
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  margin: 0 0 1.25rem;
+}
+h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(3rem, 10vw, 6.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+h1 span { display: block; }
+h1 .last { color: var(--hero-accent); }
+.lede {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.2rem, 2.6vw, 1.55rem);
+  line-height: 1.3;
+  margin: 1.5rem 0 0;
+  max-width: 30ch;
+  text-wrap: balance;
+}
+.summary { max-width: 58ch; margin: 1rem 0 0; color: var(--hero-muted); }
+
+.actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.3rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.btn.primary { background: var(--hero-warm); color: #1B1204; }
+.btn.primary:hover { transform: translateY(-2px); background: #FFBE70; }
+.btn.ghost { color: var(--hero-ink); border: 1px solid rgba(255, 255, 255, 0.28); }
+.btn.ghost:hover { border-color: var(--hero-accent); color: var(--hero-accent); transform: translateY(-2px); }
+
+/* Now panel */
+.now {
+  background: var(--hero-glass);
+  border: 1px solid var(--hero-line);
+  border-radius: 20px;
+  padding: 1.5rem;
+  backdrop-filter: blur(4px);
+}
+.now-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+.monogram {
+  flex: none;
+  width: 4.25rem;
+  height: 4.25rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  color: #072028;
+  background: linear-gradient(140deg, var(--hero-accent), #9BE7C4 70%, var(--hero-warm));
+}
+.now-head b { display: block; font-family: var(--font-display); font-size: 1.15rem; }
+.now-head span { font-size: 0.85rem; color: var(--hero-muted); }
+.now ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+.now li { padding-top: 0.9rem; border-top: 1px solid var(--hero-line); font-size: 0.93rem; }
+.now li small {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--hero-warm);
+  margin-bottom: 0.15rem;
+}
+
+/* Hero contact chips */
+.contact { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.25rem; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.45rem 0.45rem 0.45rem 0.9rem;
+  background: var(--hero-glass);
+  border: 1px solid var(--hero-line);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--hero-ink);
+}
+.chip .label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--hero-muted); }
+.chip .value { overflow-wrap: anywhere; user-select: all; }
+.chip button {
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  padding: 0.25rem 0.65rem;
+  background: rgba(94, 211, 227, 0.16);
+  color: var(--hero-accent);
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.chip button:hover { background: var(--hero-accent); color: #062029; }
+.chip.link { padding-right: 0.95rem; text-decoration: none; }
+.chip.link:hover { border-color: var(--hero-accent); }
+
+/* Stats strip */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 1rem;
+  margin: 3.5rem 0 0;
+  padding: 1.5rem 0 0;
+  border-top: 1px solid var(--hero-line);
+}
+@media (min-width: 40rem) { .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.stats div { display: grid; gap: 0.1rem; }
+.stats dt { font-family: var(--font-display); font-weight: 800; font-size: 2rem; line-height: 1; color: var(--hero-ink); order: 1; }
+.stats dd { margin: 0; font-size: 0.85rem; color: var(--hero-muted); order: 2; }
+
+/* ---------- Sections ---------- */
+section { padding-block: 5rem 0; scroll-margin-top: 1rem; }
+.sec-head { margin-bottom: 2rem; }
+.tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  margin-bottom: 0.8rem;
+}
+h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.9rem, 5vw, 2.9rem);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin: 0;
+  text-wrap: balance;
+}
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.5rem;
+  text-wrap: balance;
+}
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  --pad: 1.6rem;
+  padding: var(--pad);
+  min-width: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--accent); }
+.card p { margin: 0; color: var(--muted); }
+.card ul.points { margin: 0.9rem 0 0; padding-left: 1.1rem; color: var(--muted); font-size: 0.95rem; }
+.card ul.points li + li { margin-top: 0.4rem; }
+.pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  background: var(--warm-soft);
+  color: var(--warm);
+}
+.tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1.1rem 0 0; padding: 0; list-style: none; }
+.tags li {
+  font-family: var(--font-mono);
+  font-size: 0.73rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Featured projects */
+.featured { display: grid; gap: 1.5rem; margin-bottom: 1.5rem; }
+.feature { display: grid; gap: 1.75rem; padding: 1.75rem; }
+@media (min-width: 52rem) {
+  .feature { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 2.5rem; padding: 2rem; }
+  .feature.flip .visual { order: -1; }
+}
+.feature .top { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.9rem; }
+.feature .kicker { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.visual {
+  background-color: var(--hero-bg);
+  background-image:
+    linear-gradient(var(--hero-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hero-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  border-radius: 12px;
+  padding: 1rem 1rem 0.75rem;
+  min-width: 0;
+}
+.visual .scroll { overflow-x: auto; }
+.visual svg { display: block; width: 100%; min-width: 19rem; height: auto; }
+.visual figcaption { font-size: 0.78rem; color: var(--hero-muted); margin-top: 0.5rem; }
+figure { margin: 0; }
+
+.grid3 { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr)); }
+.card .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.icon {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.icon svg { width: 1.4rem; height: 1.4rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.banner {
+  position: relative;
+  margin: calc(-1 * var(--pad)) calc(-1 * var(--pad)) 1.25rem;
+  height: 9.5rem;
+  border-radius: 15px 15px 0 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--hero-bg), var(--hero-bg2));
+}
+.banner svg { display: block; width: 100%; height: 100%; }
+.banner .pill { position: absolute; top: 0.8rem; left: 0.8rem; background: var(--hero-warm); color: #1B1204; }
+
+/* Skills */
+.skills { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); }
+.skills h3 { font-size: 1.05rem; display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.9rem; }
+.skills h3::before { content: ""; width: 0.7rem; height: 0.7rem; border-radius: 3px; background: var(--accent); }
+.skills .card:nth-child(2) h3::before { background: var(--warm); }
+.skills .card:nth-child(3) h3::before { background: var(--muted); }
+.skills .card:nth-child(4) h3::before { background: var(--accent); border-radius: 50%; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+.chips li {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 0.93rem;
+  background: var(--bg);
+}
+
+/* Timeline */
+.timeline { list-style: none; margin: 0; padding: 0 0 0 1.75rem; position: relative; display: grid; gap: 1.5rem; }
+.timeline::before { content: ""; position: absolute; left: 0.42rem; top: 0.6rem; bottom: 0.6rem; width: 2px; background: var(--line); }
+.timeline li { position: relative; }
+.timeline li::before {
+  content: "";
+  position: absolute;
+  left: -1.75rem;
+  top: 0.45rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 3px solid var(--accent);
+}
+.timeline li.now-item::before { background: var(--hero-warm); border-color: var(--warm); }
+.timeline .when { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); margin-bottom: 0.15rem; }
+.timeline h3 { margin-bottom: 0.15rem; font-size: 1.15rem; }
+.timeline p { margin: 0; color: var(--muted); }
+.timeline .score { display: inline-block; margin-top: 0.4rem; font-family: var(--font-mono); font-size: 0.82rem; color: var(--warm); }
+
+.subhead { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; margin: 3rem 0 1rem; }
+.certs { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12.5rem), 1fr)); }
+.cert { display: grid; gap: 0.5rem; align-content: start; padding: 1.2rem; }
+.cert svg { width: 1.5rem; height: 1.5rem; fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cert b { font-family: var(--font-display); font-size: 1.05rem; line-height: 1.2; }
+.cert span { font-family: var(--font-mono); font-size: 0.74rem; color: var(--muted); }
+
+/* Recognition */
+.wins { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); margin: 0; padding: 0; list-style: none; }
+.win { display: grid; gap: 0.6rem; align-content: start; padding: 1.3rem 1.5rem; }
+.win b { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; line-height: 1.25; }
+.win.top { background: var(--hero-bg); color: var(--hero-ink); border-color: transparent; }
+.win.top .pill { background: var(--hero-warm); color: #1B1204; }
+.win.top:hover { border-color: var(--hero-accent); }
+
+/* Contact */
+.cta {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  padding: clamp(1.75rem, 5vw, 3.5rem);
+  color: var(--hero-ink);
+  background-color: var(--hero-bg);
+  background-image:
+    radial-gradient(34rem 20rem at 100% 100%, var(--hero-bg2), transparent 70%),
+    linear-gradient(var(--hero-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hero-line) 1px, transparent 1px);
+  background-size: auto, 36px 36px, 36px 36px;
+}
+.cta h2 { max-width: 18ch; }
+.cta p { color: var(--hero-muted); max-width: 52ch; margin: 1rem 0 0; }
+.cta .contact { margin-top: 1.75rem; }
+
+footer {
+  margin-top: 4rem;
+  border-top: 1px solid var(--line);
+  padding-block: 1.5rem 2.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+@media (max-width: 40rem) {
+  .hero { padding-bottom: 3rem; }
+  .hero-grid { padding-top: 3rem; }
+  section { padding-top: 3.5rem; }
+  .card { --pad: 1.3rem; padding: var(--pad); }
+  .contours { right: -18rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .contours { animation: none; }
+  .card, .btn { transition: none; }
+  .card:hover, .btn:hover { transform: none; }
+}
+</style>
+
+<style>body{margin:0}</style>
+</head>
+<body>
+<header class="hero">
+  <svg class="contours" viewBox="0 0 600 600" fill="none" aria-hidden="true">
+    <g style="stroke: var(--hero-accent); stroke-width: 1.2">
+      <ellipse cx="300" cy="300" rx="60" ry="42"/>
+      <ellipse cx="300" cy="300" rx="110" ry="80" style="opacity: 0.9"/>
+      <ellipse cx="300" cy="300" rx="165" ry="122" style="opacity: 0.75"/>
+      <ellipse cx="300" cy="300" rx="225" ry="168" style="opacity: 0.6"/>
+      <ellipse cx="300" cy="300" rx="290" ry="218" style="opacity: 0.45"/>
+    </g>
+    <circle cx="300" cy="300" r="4" style="fill: var(--hero-warm)"/>
+  </svg>
+
+  <div class="wrap">
+    <div class="topbar">
+      <span class="mark"><span class="dot"></span>SPOORTHY SHETTY</span>
+      <nav aria-label="Sections">
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#education">Education</a>
+        <a href="#recognition">Recognition</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">B.E. Information Science &amp; Engineering</p>
+        <h1><span>Spoorthy</span><span class="last">Shetty</span></h1>
+        <p class="lede">I build AI and data systems that solve practical problems.</p>
+        <p class="summary">Information Science Engineering student and founder of EcoCore, a clean-energy startup building biomass cooking solutions. I have experience in AI-driven applications, machine learning, database management and secure data solutions, and I work in Python, SQL, Java and C++. I can build data-driven, AI-powered operational applications using Palantir Foundry, Ontology, AIP and full-stack development.</p>
+        <div class="actions">
+          <a class="btn primary" href="#projects">See my projects</a>
+          <a class="btn ghost" href="https://spoirthyshetty01.github.io/cv.pdf" target="_blank" rel="noopener">View my CV</a>
+          <a class="btn ghost" href="#contact">Get in touch</a>
+        </div>
+      </div>
+
+      <aside class="now" aria-label="Right now">
+        <div class="now-head">
+          <div class="monogram" aria-hidden="true">SS</div>
+          <div><b>Spoorthy Shetty</b><span>AI, data and databases</span></div>
+        </div>
+        <ul>
+          <li><small>Studying</small>B.E. Information Science &amp; Engineering, Sahyadri College of Engineering &amp; Management</li>
+          <li><small>Funded</small>₹3.2 lakh funding through the Genesis EIR Program 3.0, Mangaluru</li>
+          <li><small>Founder</small>EcoCore, a clean-energy startup building biomass cooking solutions</li>
+        </ul>
+      </aside>
+    </div>
+
+    <dl class="stats">
+      <div><dt>5</dt><dd>Projects and ventures</dd></div>
+      <div><dt>4</dt><dd>Certifications</dd></div>
+      <div><dt>4</dt><dd>Programming languages</dd></div>
+      <div><dt>₹3.2L</dt><dd>Genesis EIR 3.0 funding</dd></div>
+    </dl>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="projects">
+    <div class="sec-head"><span class="tag">Selected work</span><h2>Projects</h2></div>
+
+    <div class="featured">
+      <article class="card feature">
+        <div>
+          <div class="top"><span class="pill">2026</span><span class="kicker">Maritime AI</span></div>
+          <h3>BerthAI: AI-Based Port Berth Allocation System</h3>
+          <p>An AI-driven system that predicts vessel waiting times and optimizes berth allocation using real-time and historical port data.</p>
+          <ul class="points">
+            <li>Integrated AIS, historical port-call, weather and tide data for real-time vessel traffic analysis.</li>
+            <li>Implemented LSTM-based wait-time prediction and constraint-aware berth allocation to reduce vessel delays.</li>
+          </ul>
+          <ul class="tags" aria-label="Topics"><li>LSTM</li><li>AIS data</li><li>Constraint-based allocation</li><li>Time series</li></ul>
+        </div>
+        <figure class="visual">
+          <div class="scroll">
+            <svg viewBox="0 0 520 160" role="img" aria-labelledby="berth-title">
+              <title id="berth-title">Illustration of vessels scheduled across three berths, with hatched segments showing waiting time</title>
+              <defs>
+                <pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                  <line x1="0" y1="0" x2="0" y2="6" style="stroke: var(--hero-warm); stroke-width: 2"/>
+                </pattern>
+              </defs>
+              <g style="font-family: var(--font-mono); font-size: 11px; fill: var(--hero-muted)">
+                <text x="0" y="42">Berth 1</text>
+                <text x="0" y="84">Berth 2</text>
+                <text x="0" y="126">Berth 3</text>
+                <text x="70" y="154">time →</text>
+              </g>
+              <g style="stroke: var(--hero-muted); stroke-width: 1; opacity: 0.6">
+                <line x1="64" y1="18" x2="64" y2="138"/>
+                <line x1="64" y1="138" x2="516" y2="138"/>
+              </g>
+              <g style="fill: var(--hero-accent)">
+                <rect x="70" y="26" width="140" height="24" rx="4"/>
+                <rect x="218" y="26" width="120" height="24" rx="4"/>
+                <rect x="346" y="26" width="130" height="24" rx="4"/>
+                <rect x="70" y="68" width="90" height="24" rx="4"/>
+                <rect x="168" y="68" width="150" height="24" rx="4"/>
+                <rect x="326" y="68" width="100" height="24" rx="4"/>
+                <rect x="124" y="110" width="130" height="24" rx="4"/>
+                <rect x="262" y="110" width="110" height="24" rx="4"/>
+              </g>
+              <g style="fill: url(#hatch); stroke: var(--hero-warm); stroke-width: 1">
+                <rect x="70" y="110" width="46" height="24" rx="4"/>
+                <rect x="434" y="68" width="42" height="24" rx="4"/>
+              </g>
+            </svg>
+          </div>
+          <figcaption>Illustration only. Solid bars are vessels at berth, hatched bars are vessels waiting.</figcaption>
+        </figure>
+      </article>
+
+      <article class="card feature flip">
+        <div>
+          <div class="top"><span class="pill">2026-present</span><span class="kicker">Clean-energy startup</span></div>
+          <h3>Founder, EcoCore</h3>
+          <p>A clean-energy startup developing biomass cooking solutions, with a background in AI and data-driven systems.</p>
+          <ul class="points">
+            <li>Founded EcoCore, a clean-energy startup building biomass chulas and bakery ovens.</li>
+            <li>Designed a secondary-air combustion core for higher efficiency and lower emissions.</li>
+          </ul>
+          <ul class="tags" aria-label="Topics"><li>Startup</li><li>Biomass</li><li>Secondary-air combustion</li><li>Clean cooking</li></ul>
+        </div>
+        <figure class="visual">
+          <div class="scroll">
+            <svg viewBox="0 0 360 230" role="img" aria-labelledby="eco-title">
+              <title id="eco-title">Illustration of a combustion chamber with primary air from below, pre-heated secondary air from the sides and heat rising from the top</title>
+              <defs>
+                <marker id="arrA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0 0L10 5L0 10z" style="fill: var(--hero-accent)"/>
+                </marker>
+                <marker id="arrW" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0 0L10 5L0 10z" style="fill: var(--hero-warm)"/>
+                </marker>
+              </defs>
+              <rect x="110" y="96" width="140" height="94" rx="8" style="fill: rgba(255,255,255,0.05); stroke: var(--hero-muted); stroke-width: 1.5"/>
+              <path d="M180 184 C160 166 164 146 180 128 C184 144 204 150 202 168 C201 178 192 184 180 184Z" style="fill: var(--hero-warm)"/>
+              <path d="M180 176 C171 166 174 156 181 148 C184 156 192 160 190 168 C189 173 185 176 180 176Z" style="fill: #FFD9A0"/>
+              <line x1="180" y1="224" x2="180" y2="196" style="stroke: var(--hero-accent); stroke-width: 2" marker-end="url(#arrA)"/>
+              <line x1="48" y1="120" x2="106" y2="120" style="stroke: var(--hero-accent); stroke-width: 2" marker-end="url(#arrA)"/>
+              <line x1="312" y1="120" x2="254" y2="120" style="stroke: var(--hero-accent); stroke-width: 2" marker-end="url(#arrA)"/>
+              <g style="stroke: var(--hero-warm); stroke-width: 2; stroke-dasharray: 4 4">
+                <line x1="150" y1="88" x2="150" y2="50" marker-end="url(#arrW)"/>
+                <line x1="180" y1="88" x2="180" y2="42" marker-end="url(#arrW)"/>
+                <line x1="210" y1="88" x2="210" y2="50" marker-end="url(#arrW)"/>
+              </g>
+              <g style="font-family: var(--font-mono); font-size: 11px; fill: var(--hero-muted)">
+                <text x="2" y="108">secondary air</text>
+                <text x="358" y="108" text-anchor="end">secondary air</text>
+                <text x="194" y="224">primary air</text>
+                <text x="180" y="30" text-anchor="middle">usable heat</text>
+              </g>
+            </svg>
+          </div>
+          <figcaption>Illustration only. Pre-heated secondary air burns off volatiles above the fire.</figcaption>
+        </figure>
+      </article>
+    </div>
+
+    <div class="grid3">
+      <article class="card">
+        <div class="banner">
+          <svg viewBox="0 0 400 150" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration of framed artworks hanging in a gallery">
+            <g style="fill: none; stroke: var(--hero-ink); stroke-width: 2; opacity: 0.85">
+              <rect x="52" y="34" width="80" height="94" rx="2"/>
+              <rect x="152" y="22" width="100" height="70" rx="2"/>
+              <rect x="272" y="44" width="78" height="84" rx="2"/>
+            </g>
+            <circle cx="92" cy="70" r="20" style="fill: var(--hero-warm)"/>
+            <path d="M58 122 L92 90 L126 122Z" style="fill: var(--hero-accent)"/>
+            <g style="stroke: var(--hero-accent); stroke-width: 3; opacity: 0.8">
+              <line x1="166" y1="84" x2="206" y2="30"/>
+              <line x1="186" y1="84" x2="226" y2="30"/>
+              <line x1="206" y1="84" x2="246" y2="30"/>
+            </g>
+            <circle cx="222" cy="52" r="12" style="fill: var(--hero-warm)"/>
+            <path d="M282 120 A28 28 0 0 1 340 120Z" style="fill: var(--hero-accent)"/>
+            <path d="M296 120 A14 14 0 0 1 324 120Z" style="fill: var(--hero-warm)"/>
+            <circle cx="311" cy="68" r="9" style="fill: var(--hero-ink); opacity: 0.85"/>
+            <rect x="36" y="138" width="328" height="3" rx="1.5" style="fill: var(--hero-muted); opacity: 0.6"/>
+          </svg>
+          <span class="pill">2025</span>
+        </div>
+        <h3>Art Gallery Management System</h3>
+        <p>A database solution for complete gallery operations and transaction management, built with SQL and MySQL.</p>
+        <ul class="points">
+          <li>Applied normalization, stored procedures and triggers for efficient data management.</li>
+          <li>Built a database architecture covering inventory, customer and transaction management.</li>
+        </ul>
+        <ul class="tags" aria-label="Topics"><li>SQL</li><li>MySQL</li><li>Triggers</li></ul>
+      </article>
+
+      <article class="card">
+        <div class="banner">
+          <svg viewBox="0 0 400 150" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration of a heartbeat line beside clustered data points">
+            <g style="stroke: var(--hero-line); stroke-width: 1">
+              <line x1="0" y1="50" x2="400" y2="50"/>
+              <line x1="0" y1="100" x2="400" y2="100"/>
+              <line x1="100" y1="0" x2="100" y2="150"/>
+              <line x1="200" y1="0" x2="200" y2="150"/>
+              <line x1="300" y1="0" x2="300" y2="150"/>
+            </g>
+            <path d="M0 96 H92 L108 96 L124 52 L142 124 L156 74 L168 96 H236 L252 96 L268 40 L286 128 L300 78 L312 96 H400" fill="none" style="stroke: var(--hero-accent); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round"/>
+            <g style="fill: var(--hero-warm)">
+              <circle cx="320" cy="30" r="4"/><circle cx="334" cy="40" r="4"/><circle cx="324" cy="48" r="4"/><circle cx="340" cy="28" r="3"/>
+            </g>
+            <g style="fill: var(--hero-ink); opacity: 0.85">
+              <circle cx="364" cy="58" r="4"/><circle cx="376" cy="48" r="4"/><circle cx="372" cy="68" r="4"/><circle cx="358" cy="46" r="3"/>
+            </g>
+            <g style="fill: var(--hero-accent)">
+              <circle cx="364" cy="26" r="4"/><circle cx="378" cy="30" r="3"/><circle cx="370" cy="38" r="4"/>
+            </g>
+          </svg>
+          <span class="pill">2024</span>
+        </div>
+        <h3>AI-Based Personalized Health Monitoring System</h3>
+        <p>A supervised learning system that classifies users and gives age-specific health recommendations, using Python and Pandas.</p>
+        <ul class="points">
+          <li>Integrated clustering with an adaptive recommendation engine to improve personalized predictions.</li>
+          <li>Implemented data encryption to protect user-uploaded health data.</li>
+        </ul>
+        <ul class="tags" aria-label="Topics"><li>Python</li><li>Pandas</li><li>Clustering</li><li>Encryption</li></ul>
+      </article>
+
+      <article class="card">
+        <div class="banner">
+          <svg viewBox="0 0 400 150" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustration of a delivery route between two points on a city map">
+            <g style="stroke: var(--hero-line); stroke-width: 1.5">
+              <line x1="0" y1="40" x2="400" y2="40"/>
+              <line x1="0" y1="105" x2="400" y2="105"/>
+              <line x1="80" y1="0" x2="80" y2="150"/>
+              <line x1="190" y1="0" x2="190" y2="150"/>
+              <line x1="310" y1="0" x2="310" y2="150"/>
+            </g>
+            <g style="fill: var(--hero-ink); opacity: 0.14">
+              <rect x="94" y="52" width="82" height="42" rx="3"/>
+              <rect x="204" y="52" width="92" height="42" rx="3"/>
+              <rect x="94" y="116" width="82" height="26" rx="3"/>
+              <rect x="324" y="52" width="60" height="42" rx="3"/>
+              <rect x="10" y="52" width="60" height="42" rx="3"/>
+            </g>
+            <circle cx="60" cy="118" r="26" fill="none" style="stroke: var(--hero-accent); stroke-width: 1.5; stroke-dasharray: 3 4"/>
+            <path d="M60 118 C 120 118, 140 66, 200 72 S 300 104, 340 40" fill="none" style="stroke: var(--hero-warm); stroke-width: 3; stroke-dasharray: 8 6; stroke-linecap: round"/>
+            <circle cx="60" cy="118" r="8" style="fill: var(--hero-accent)"/>
+            <circle cx="60" cy="118" r="3" style="fill: var(--hero-bg)"/>
+            <circle cx="340" cy="40" r="9" style="fill: var(--hero-warm)"/>
+            <circle cx="340" cy="40" r="3.5" style="fill: var(--hero-bg)"/>
+          </svg>
+          <span class="pill">2024</span>
+        </div>
+        <h3>One-Stop Delivery Option Application</h3>
+        <p>A delivery platform concept with AI-based classification that picks the best delivery mode, tested on real-world datasets.</p>
+        <ul class="points">
+          <li>Applied Decision Tree classification to recommend delivery modes from user and shipment requirements.</li>
+          <li>Designed a multi-step booking workflow for intra-city and inter-city delivery.</li>
+        </ul>
+        <ul class="tags" aria-label="Topics"><li>Decision Tree</li><li>Classification</li><li>Workflow</li></ul>
+      </article>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="sec-head"><span class="tag">Toolkit</span><h2>Skills</h2></div>
+    <div class="skills">
+      <div class="card">
+        <h3>Languages</h3>
+        <ul class="chips"><li>Java</li><li>C++</li><li>C</li><li>Python</li></ul>
+      </div>
+      <div class="card">
+        <h3>Databases</h3>
+        <ul class="chips"><li>MySQL</li><li>MongoDB</li></ul>
+      </div>
+      <div class="card">
+        <h3>Operating systems</h3>
+        <ul class="chips"><li>Linux (CentOS)</li><li>Red Hat Enterprise Linux</li></ul>
+      </div>
+      <div class="card">
+        <h3>Core areas</h3>
+        <ul class="chips"><li>Machine Learning</li><li>Database Management</li><li>Computer Networks</li><li>Cryptography</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="education">
+    <div class="sec-head"><span class="tag">Learning</span><h2>Education and certifications</h2></div>
+
+    <ol class="timeline">
+      <li class="now-item">
+        <div class="when">Ongoing</div>
+        <h3>B.E. Information Science &amp; Engineering</h3>
+        <p>Sahyadri College of Engineering &amp; Management</p>
+      </li>
+      <li>
+        <div class="when">2022</div>
+        <h3>Pre-University</h3>
+        <p>Sanjay Ghodawath Pre University, Department of Pre-University Education, Maharashtra</p>
+        <span class="score">74.95%</span>
+      </li>
+      <li>
+        <div class="when">2020</div>
+        <h3>High School</h3>
+        <p>Holy Cross Convent High School, Kolhapur, Maharashtra</p>
+        <span class="score">85.80%</span>
+      </li>
+    </ol>
+
+    <h3 class="subhead">Certifications</h3>
+    <div class="certs">
+      <div class="card cert">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
+        <b>Linux Training Course</b><span>Completed</span>
+      </div>
+      <div class="card cert">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
+        <b>Python and Ethical Hacking</b><span>Completed</span>
+      </div>
+      <div class="card cert">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
+        <b>CCNA</b><span>Completed</span>
+      </div>
+      <div class="card cert">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>
+        <b>Cryptography and Hashing</b><span>Python and Java</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="recognition">
+    <div class="sec-head"><span class="tag">Beyond the classroom</span><h2>Achievements and positions</h2></div>
+    <ul class="wins">
+      <li class="card win top"><span class="pill">Ongoing</span><b>₹3.2 lakh funding, Genesis EIR Program 3.0, Mangaluru</b></li>
+      <li class="card win"><span class="pill">2025</span><b>Top 15, Titan Design Impact Movement Makethon, Mangaluru</b></li>
+      <li class="card win"><span class="pill">2025</span><b>Participant, Smart India Hackathon, Mangaluru</b></li>
+      <li class="card win"><span class="pill">2019</span><b>Selected participant, Infosys Web Development Training Program</b></li>
+      <li class="card win"><span class="pill">2018</span><b>Distinction in Bharatanatyam, Kolhapur</b></li>
+      <li class="card win"><span class="pill">8+ years</span><b>Formal badminton training</b></li>
+    </ul>
+  </section>
+
+  <section id="contact">
+    <div class="cta">
+      <span class="eyebrow">Get in touch</span>
+      <h2>Open to internships, projects and collaborations.</h2>
+      <p>I'm interested in AI, data and software work. Email is the fastest way to reach me.</p>
+      <div class="contact">
+        <div class="chip">
+          <span class="label">Email</span>
+          <span class="value">shettyspoorthy594@gmail.com</span>
+          <button type="button" data-copy="shettyspoorthy594@gmail.com">Copy</button>
+        </div>
+        <div class="chip">
+          <span class="label">Phone</span>
+          <span class="value">+91-8788996351</span>
+          <button type="button" data-copy="+91-8788996351">Copy</button>
+        </div>
+        <a class="chip link" href="https://www.linkedin.com/in/spoorthy-shetty-91b14326a/" target="_blank" rel="noopener">
+          <span class="label">LinkedIn</span>
+          <span class="value">View profile</span>
+        </a>
+        <a class="chip link" href="https://spoirthyshetty01.github.io/cv.pdf" target="_blank" rel="noopener">
+          <span class="label">CV</span>
+          <span class="value">Open PDF</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>Spoorthy Shetty · B.E. Information Science &amp; Engineering</footer>
+</main>
+
+<script>
+(function () {
+  function fallbackSelect(btn) {
+    var v = btn.parentElement.querySelector('.value');
+    if (!v) return;
+    var r = document.createRange();
+    r.selectNodeContents(v);
+    var s = window.getSelection();
+    s.removeAllRanges();
+    s.addRange(r);
+  }
+  document.querySelectorAll('button[data-copy]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var text = btn.getAttribute('data-copy');
+      var done = function () {
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1600);
+      };
+      try {
+        navigator.clipboard.writeText(text).then(done, function () { fallbackSelect(btn); });
+      } catch (e) {
+        fallbackSelect(btn);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
